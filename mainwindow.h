@@ -1,0 +1,61 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+#include <QMainWindow>
+#include <QVBoxLayout>
+#include <QTimer>
+#include <QSerialPort>
+#include <QSerialPortInfo>
+#include <QDebug>
+#include <QSettings>
+#include <QMessageBox>
+#include <QCloseEvent>
+
+#include "globals.h"
+#include "devicecontrol.h"
+#include "serialporthandler.h"
+
+namespace Ui {
+class MainWindow;
+}
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+    void closeEvent(QCloseEvent* event);
+
+private:
+    Ui::MainWindow *ui;
+    SerialPortHandler *serialPort;
+    void setupWindow();
+    void setDevParam(quint8 address, quint16 reg, quint16 value);
+    QList<DeviceControl*> devices;
+    void setupDevices(bool);
+    qint8 currentAddress;
+    int currentCommandId;
+    bool paramsIsLoaded[2*DEVICE_COUNT];
+    void requestNextParam();
+    QSettings* settings;
+    void readSettings();
+    void writeSettings();
+    bool maybeSave();
+    void initModbus();
+
+
+private slots:
+    void showError(QString msg);
+    void openSettingsWindow(quint8 address);
+    void setNewMaster(quint8, bool);
+    void setNewDevName(quint8, QString);
+    void onStateChanged(bool);
+    void readReady();
+    void onTimeout(quint8);
+    void on_refreshPortsButton_clicked();
+    void on_connectButton_clicked();
+//    void prepareDataToWrite(quint8, quint16, quint16);
+};
+
+#endif // MAINWINDOW_H

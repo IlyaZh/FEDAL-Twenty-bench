@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/forms">
+        <file>devicecontrolform.ui</file>
+    </qresource>
+</RCC>
