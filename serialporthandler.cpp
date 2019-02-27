@@ -1,6 +1,6 @@
 #include "serialporthandler.h"
 #include "crctable.h"
-#include "globals.h"
+//#include "globals.h"
 
 SerialPortHandler::SerialPortHandler(QString port, int baud, int tout, QObject *parent) : QObject(parent),
     serialPort(nullptr)
