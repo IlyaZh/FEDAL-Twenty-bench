@@ -26,8 +26,6 @@ void messageToFile(QtMsgType type, const QMessageLogContext &context, const QStr
   QFile file(LOG_FILE);
 
 
-//  if(!file.exists()) return;
-
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append)) {
       return;
   }

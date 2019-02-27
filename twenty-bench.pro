@@ -8,7 +8,9 @@ QT       += core gui uitools serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = twenty-bench
+VERSION_PE_HEADER = 1.1
+VERSION = 1.1.1
+TARGET = "FEDAL Twenty bench"
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
