@@ -33,7 +33,7 @@ public:
     int bytesToSend;
     bool queueIsEmpty();
 
-
+    enum {MIN_REGS_SHIFT = 0, MAX_REGS_SHIFT = 1, VALUES_REGS_SHIFT = 2} arrayRegShift_t;
     enum {READ_COMMAND = 0x03, WRITE_COMMAND = 0x06} modBusCommands;
     enum {ADDRESS_SHIFT = 0, FUNCTION_CODE_SHIFT = 1, REG_HIGH_SHIFT = 2, REG_LOW_SHIFT = 3, READ_COUNT_SHIFT = 2, WRITE_HIGH_DATA_SHIFT = 4, WRITE_LOW_DATA_SHIFT = 5, READ_HIGH_DATA_SHIFT = 3, READ_LOW_DATA_SHIFT = 4} modBusShift;
 
@@ -69,7 +69,7 @@ signals:
     void stateChanged(bool);
     void errorOccuredSignal();
     void timeoutSignal(quint8 address);
-//    void portIsReady();
+    void appendToLog(QString);
 
 public slots:
     void setPort(QString);

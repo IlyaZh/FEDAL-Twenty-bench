@@ -55,6 +55,10 @@ private slots:
     void on_refreshPortsButton_clicked();
     void on_connectButton_clicked();
 //    void prepareDataToWrite(quint8, quint16, quint16);
+    void on_delaySpinBox_editingFinished();
+    void on_lastAddressSpinBox_editingFinished();
+    void on_firstAddressSpinBox_editingFinished();
+    void appendToWLog(QString msg);
 };
 
 #endif // MAINWINDOW_H

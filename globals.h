@@ -40,7 +40,6 @@ const int COM_TIMEOUT = 100; // ms
 #endif
 const QList<quint16> readRegisters = {0x0011, 0x0021, 0x0001};
 const QList<quint8> countRegisters = {5, 5, 7};
-enum {MIN_REGS_SHIFT = 0, MAX_REGS_SHIFT = 1, VALUES_REGS_SHIFT = 2} arrayRegShift_t;
 
 const QString LOG_FILE = QDir::homePath() + "/FEDAL20-errors.log";
 const int MAX_LOG_FILE_SIZE = 1024*1024*100;

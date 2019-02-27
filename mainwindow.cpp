@@ -32,6 +32,17 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 }
 
 void MainWindow::setupWindow() {
+    ui->firstAddressLabel->setText(QString::number(START_ADDRESS));
+    ui->firstAddressSpinBox->setMinimum(START_ADDRESS);
+    ui->firstAddressSpinBox->setValue(START_ADDRESS);
+    ui->lastAddressSpinBox->setMinimum(START_ADDRESS);
+    ui->lastAddressLabel->setText(QString::number(START_ADDRESS+DEVICE_COUNT-1));
+    ui->lastAddressSpinBox->setMaximum(START_ADDRESS+DEVICE_COUNT-1);
+    ui->firstAddressSpinBox->setMaximum(START_ADDRESS+DEVICE_COUNT-1);
+    ui->lastAddressSpinBox->setValue(START_ADDRESS+DEVICE_COUNT-1);
+
+
+
     this->setWindowTitle(APP_TITLE);
 
     ui->logAddressLabel->setText("Log file dest.: " + LOG_FILE);
@@ -55,6 +66,7 @@ void MainWindow::setupWindow() {
 
 void MainWindow::showError(QString msg) {
     qCritical() << "Error: " << msg;
+    appendToWLog("Error: " + msg);
     ui->statusBar->showMessage(msg, STATUSBAR_MESSAGE_TIMEOUT);
 
     if(serialPort != nullptr) {
@@ -144,6 +156,7 @@ void MainWindow::onStateChanged(bool flag) {
             }");
             setupDevices(true);
         qInfo() << "Порт открыт: " << ui->comPortBox->currentText() + QString("   ") + ui->comBaudBox->currentText() + " bps";
+        appendToWLog("Порт открыт: " + ui->comPortBox->currentText() + QString("   ") + ui->comBaudBox->currentText() + " bps");
         requestNextParam();
     } else {
         ui->portStateLabel->setText("НЕ подключен");
@@ -155,6 +168,7 @@ void MainWindow::onStateChanged(bool flag) {
         ui->connectButton->setText("Подключиться");
         setupDevices(false);
         qInfo() << "Порт закрыт";
+        appendToWLog("Порт закрыт");
     }
 }
 
@@ -163,9 +177,9 @@ void MainWindow::readReady() {
 
     quint16 startRegister = serialPort->getRegister();
     qint8 addr = serialPort->getAddress();
-    if(startRegister >= readRegisters[MIN_REGS_SHIFT] && startRegister < readRegisters[MIN_REGS_SHIFT]+countRegisters[MIN_REGS_SHIFT])
+    if(startRegister >= readRegisters[SerialPortHandler::MIN_REGS_SHIFT] && startRegister < readRegisters[SerialPortHandler::MIN_REGS_SHIFT]+countRegisters[SerialPortHandler::MIN_REGS_SHIFT])
         paramsIsLoaded[2*(addr-1)] = true;
-    else if (startRegister >= readRegisters[MAX_REGS_SHIFT] && startRegister < readRegisters[MAX_REGS_SHIFT]+countRegisters[MAX_REGS_SHIFT])
+    else if (startRegister >= readRegisters[SerialPortHandler::MAX_REGS_SHIFT] && startRegister < readRegisters[SerialPortHandler::MAX_REGS_SHIFT]+countRegisters[SerialPortHandler::MAX_REGS_SHIFT])
         paramsIsLoaded[2*(addr-1)+1] = true;
 
     for(quint8 i = 0; i < serialPort->getCount(); i++) {
@@ -253,21 +267,24 @@ void MainWindow::onTimeout(quint8 devAddress) {
 void MainWindow::requestNextParam() {
     if(!serialPort->isOpen()) return;
 
-    currentCommandId = VALUES_REGS_SHIFT;
+    currentCommandId = SerialPortHandler::VALUES_REGS_SHIFT;
     if(paramsIsLoaded[2*(currentAddress-1)+1] == false) {
-        currentCommandId = MAX_REGS_SHIFT;
+        currentCommandId = SerialPortHandler::MAX_REGS_SHIFT;
     }
 
     if(paramsIsLoaded[2*(currentAddress-1)] == false) {
-        currentCommandId = MIN_REGS_SHIFT;
+        currentCommandId = SerialPortHandler::MIN_REGS_SHIFT;
     }
 
     serialPort->dataToRead(currentAddress, readRegisters[currentCommandId], countRegisters[currentCommandId]);
 
     currentAddress +=1 ;
-    if(currentAddress > DEVICE_COUNT) {
-        currentAddress = START_ADDRESS;
+    if(currentAddress > ui->lastAddressLabel->text().toInt()) {
+        currentAddress = ui->firstAddressLabel->text().toInt();
     }
+//    if(currentAddress > DEVICE_COUNT) {
+//        currentAddress = START_ADDRESS;
+//    }
 }
 
 void MainWindow::on_refreshPortsButton_clicked()
@@ -300,16 +317,20 @@ void MainWindow::on_connectButton_clicked()
     settings->setValue("comPort", ui->comPortBox->currentText());
     settings->setValue("comBaudRate", ui->comBaudBox->currentText().toInt());
 
-    if(serialPort == nullptr) serialPort = new SerialPortHandler(ui->comPortBox->currentText(), ui->comBaudBox->currentText().toInt(), COM_TIMEOUT, this);
+    if(serialPort == nullptr)
+        serialPort = new SerialPortHandler(ui->comPortBox->currentText(), ui->comBaudBox->currentText().toInt(), COM_TIMEOUT, this);
 
     if(serialPort->isOpen()) {
         serialPort->setOpenState(false);
         ui->connectButton->setChecked(false);
+        disconnect(serialPort, 0, 0, 0);
     } else {
+//        currentAddress = START_ADDRESS;
+        currentAddress = ui->firstAddressLabel->text().toInt();
+        currentCommandId = 0;
         serialPort->setTimeout(COM_TIMEOUT);
-        if(serialPort) {
-            connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
-        }
+        connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
+        connect(serialPort, SIGNAL(appendToLog(QString)), this, SLOT(appendToWLog(QString)));
 
         connect(serialPort, &SerialPortHandler::errorOccuredSignal, [this]() {
             showError(serialPort->errorString());
@@ -360,3 +381,31 @@ void MainWindow::setNewMaster(quint8 address, bool isSlave) {
 //void MainWindow::prepareDataToWrite(quint8 address, quint16 startRegister, quint16 value) {
 //        serialPort->dataToWrite(address, startRegister, value);
 //}
+
+
+void MainWindow::on_delaySpinBox_editingFinished()
+{
+    if(serialPort == nullptr) return;
+
+    int arg1 = ui->delaySpinBox->value();
+    serialPort->setTimeout(arg1);
+    ui->delayLabel->setText(QString::number(arg1) + " мс");
+}
+
+void MainWindow::on_lastAddressSpinBox_editingFinished()
+{
+    int arg1 = ui->lastAddressSpinBox->value();
+    ui->lastAddressLabel->setText(QString::number(arg1));
+    ui->firstAddressSpinBox->setMaximum(arg1);
+}
+
+void MainWindow::on_firstAddressSpinBox_editingFinished()
+{
+    int arg1 = ui->firstAddressSpinBox->value();
+    ui->firstAddressLabel->setText(QString::number(arg1));
+    ui->lastAddressSpinBox->setMinimum(arg1);
+}
+
+void MainWindow::appendToWLog(QString msg) {
+    ui->log->appendPlainText("[" + QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss:zzz") + "] " + msg + QString('\r'));
+}
