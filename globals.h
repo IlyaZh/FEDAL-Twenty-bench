@@ -8,7 +8,7 @@
 //#define DEBUG
 
 const QString ORG_NAME = "FEDAL";
-const QString APP_NAME = "Single Bench";
+const QString APP_NAME = "Twenty Bench";
 const QString PROGRAM_NAME = "Fedal Work Bench";
 const int MAJOR_VERSION = 1;
 const int MINOR_VERSION = 1;
