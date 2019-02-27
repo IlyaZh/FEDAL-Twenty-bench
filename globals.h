@@ -12,7 +12,8 @@ const QString APP_NAME = "Single Bench";
 const QString PROGRAM_NAME = "Fedal Work Bench";
 const int MAJOR_VERSION = 1;
 const int MINOR_VERSION = 1;
-const QString APP_TITLE = PROGRAM_NAME + " (Version " + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION) + ")";
+const int PATCH_VERSION = 1;
+const QString APP_TITLE = PROGRAM_NAME + " (Version " + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION) + "." + QString::number(PATCH_VERSION) + ")";
 const QList<quint32> BAUDRATES = {9600, 14400, 19200};
 extern QLocale wlocale;
 
