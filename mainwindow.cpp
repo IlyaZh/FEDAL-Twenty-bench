@@ -12,9 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {
-    if(serialPort)
+    if(serialPort != nullptr) {
         serialPort->setOpenState(false);
-    delete serialPort;
+        delete serialPort;
+        serialPort = nullptr;
+    }
 
     delete ui;
 }
@@ -47,35 +49,19 @@ void MainWindow::setupWindow() {
     }
 
     on_refreshPortsButton_clicked(); // refresh com ports
-
-
-    initModbus();
 }
 
 // private
-
-void MainWindow::initModbus() {
-    serialPort = new SerialPortHandler(this);
-    serialPort->setTimeout(COM_TIMEOUT);
-    if(serialPort) {
-        connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
-    }
-
-    connect(serialPort, &SerialPortHandler::errorOccuredSignal, [this]() {
-        showError(serialPort->errorString());
-    });
-    connect(serialPort, SIGNAL(timeoutSignal(quint8)), this, SLOT(onTimeout(quint8)));
-    //connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
-    connect(serialPort, SIGNAL(newDataIsReady()), this, SLOT(readReady()));
-}
 
 void MainWindow::showError(QString msg) {
     qCritical() << "Error: " << msg;
     ui->statusBar->showMessage(msg, STATUSBAR_MESSAGE_TIMEOUT);
 
-    serialPort->nextTask();
-    if(serialPort->queueIsEmpty())
-        requestNextParam();
+    if(serialPort != nullptr) {
+        serialPort->nextTask();
+        if(serialPort->queueIsEmpty())
+            requestNextParam();
+    }
 }
 
 void MainWindow::readSettings() {
@@ -314,10 +300,25 @@ void MainWindow::on_connectButton_clicked()
     settings->setValue("comPort", ui->comPortBox->currentText());
     settings->setValue("comBaudRate", ui->comBaudBox->currentText().toInt());
 
+    if(serialPort == nullptr) serialPort = new SerialPortHandler(ui->comPortBox->currentText(), ui->comBaudBox->currentText().toInt(), COM_TIMEOUT, this);
+
     if(serialPort->isOpen()) {
         serialPort->setOpenState(false);
         ui->connectButton->setChecked(false);
     } else {
+        serialPort->setTimeout(COM_TIMEOUT);
+        if(serialPort) {
+            connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
+        }
+
+        connect(serialPort, &SerialPortHandler::errorOccuredSignal, [this]() {
+            showError(serialPort->errorString());
+        });
+        connect(serialPort, SIGNAL(timeoutSignal(quint8)), this, SLOT(onTimeout(quint8)));
+        //connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
+        connect(serialPort, SIGNAL(newDataIsReady()), this, SLOT(readReady()));
+
+
         serialPort->setBaud(ui->comBaudBox->currentText().toInt());
         serialPort->setPort(ui->comPortBox->currentText());
         serialPort->setTimeout(COM_TIMEOUT);

@@ -17,7 +17,7 @@ class SerialPortHandler : public QObject
 {
     Q_OBJECT
 public:
-    explicit SerialPortHandler(QObject *parent = nullptr);
+    explicit SerialPortHandler(QString port, int baud = QSerialPort::Baud9600, int timeout = 100, QObject *parent = nullptr);
     ~SerialPortHandler();
 
     QString getPortName();
@@ -86,6 +86,7 @@ private slots:
     void errorOccuredSlot(QSerialPort::SerialPortError error);
     void dataIsWritten(qint64);
     void timeOut();
+    void clearBuffer();
 };
 
 #endif // SERIALPORTHANDLER_H

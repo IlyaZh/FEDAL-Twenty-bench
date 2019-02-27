@@ -1,13 +1,17 @@
 #include "serialporthandler.h"
 #include "crctable.h"
+#include "globals.h"
 
-SerialPortHandler::SerialPortHandler(QObject *parent) : QObject(parent),
+SerialPortHandler::SerialPortHandler(QString port, int baud, int tout, QObject *parent) : QObject(parent),
     serialPort(nullptr)
 {
     serialPort = new QSerialPort();
     serialPort->setStopBits(QSerialPort::TwoStop);
     serialPort->setDataBits(QSerialPort::Data8);
     serialPort->setParity(QSerialPort::NoParity);
+    setBaud(baud);
+    setPort(port);
+    setTimeout(tout);
 
     timeout_period = 50;
     values.clear();
@@ -21,6 +25,7 @@ SerialPortHandler::SerialPortHandler(QObject *parent) : QObject(parent),
     connect(errorTimer, SIGNAL(timeout()), this, SLOT(timeOut()));
     connect(serialPort, SIGNAL(bytesWritten(qint64)), this, SLOT(dataIsWritten(qint64)));
     connect(serialPort, SIGNAL(readyRead()), this, SLOT(readyRead()));
+    connect(this, SIGNAL(errorOccuredSignal()), this, SLOT(clearBuffer()));
 }
 
 SerialPortHandler::~SerialPortHandler() {
@@ -301,5 +306,10 @@ bool SerialPortHandler::queueIsEmpty() {
 
 void SerialPortHandler::clearQueue() {
     queue.clear();
+    busyFlag = false;
+}
+
+void SerialPortHandler::clearBuffer() {
+    buffer.clear();
     busyFlag = false;
 }

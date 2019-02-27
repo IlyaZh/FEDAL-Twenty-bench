@@ -42,7 +42,6 @@ private:
     void readSettings();
     void writeSettings();
     bool maybeSave();
-    void initModbus();
 
 
 private slots:
