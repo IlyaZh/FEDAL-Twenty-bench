@@ -61,6 +61,7 @@ void SerialPortHandler::readyRead() {
     errorTimer->setInterval(timeout_period);
 
     buffer.append(serialPort->readAll());
+    emit appendToLog("<- receive:" + buffer.toHex(' '));
 
     if(buffer.size() == expectedLength) {
         quint16 inCRC;
@@ -115,6 +116,7 @@ void SerialPortHandler::setOpenState(bool state) {
     if(serialPort->isOpen()) {
         serialPort->close();
         clearQueue();
+        clearBuffer();
         emit stateChanged(serialPort->isOpen());
     } else {
         if(serialPort->open(QIODevice::ReadWrite)) {
@@ -146,6 +148,7 @@ void SerialPortHandler::startTransmit(QByteArray str) {
     bytesToSend -= serialPort->write(str, bytesToSend);
     qInfo() << " ";
     qInfo() << "-> transmit: " << str.toHex(' ');
+    emit appendToLog("-> transmit: " + str.toHex(' '));
     errorTimer->stop();
     errorTimer->setInterval(timeout_period);
     errorTimer->start();

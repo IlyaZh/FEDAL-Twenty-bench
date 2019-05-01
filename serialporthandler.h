@@ -69,7 +69,7 @@ signals:
     void stateChanged(bool);
     void errorOccuredSignal();
     void timeoutSignal(quint8 address);
-//    void portIsReady();
+    void appendToLog(QString);
 
 public slots:
     void setPort(QString);
