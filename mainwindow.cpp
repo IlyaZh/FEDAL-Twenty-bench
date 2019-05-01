@@ -112,7 +112,6 @@ void MainWindow::setupDevices(bool state) {
             if(devices.isEmpty()) {
                 for(uint8_t i = START_ADDRESS-1; i < DEVICE_COUNT; i++) {
                     DeviceControl *devPtr = new DeviceControl(i+1);
-//                    devices.insert(i, devPtr);
 
                     QString name = settings->value("Dev"+QString::number(i+1), "#"+QString::number(i+1)).toString();
                     devPtr->setDevName(name);
@@ -137,6 +136,7 @@ void MainWindow::setupDevices(bool state) {
             foreach(DeviceControl* devPtr, devices) {
                 vlayout->removeWidget(devPtr->loadWidget());
                 devices.removeOne(devPtr);
+                disconnect(devPtr, nullptr, nullptr, nullptr);
                 devPtr->deleteLater();
             }
         }
@@ -256,7 +256,7 @@ void MainWindow::setDevParam(quint8 address, quint16 reg, quint16 value) {
 }
 
 void MainWindow::onTimeout(quint8 devAddress) {
-    if(devAddress <= devices.size()) {
+    if(devAddress > 0 && devAddress <= devices.size()) {
         devices.at(devAddress-1)->setLink(DeviceControl::NO_LINK_STATE);
     }
 
@@ -331,15 +331,20 @@ void MainWindow::on_connectButton_clicked()
         serialPort->setTimeout(COM_TIMEOUT);
         connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
         connect(serialPort, SIGNAL(appendToLog(QString)), this, SLOT(appendToWLog(QString)));
-
         connect(serialPort, &SerialPortHandler::errorOccuredSignal, [this]() {
             showError(serialPort->errorString());
         });
         connect(serialPort, SIGNAL(timeoutSignal(quint8)), this, SLOT(onTimeout(quint8)));
-        //connect(serialPort, SIGNAL(stateChanged(bool)), this, SLOT(onStateChanged(bool)));
         connect(serialPort, SIGNAL(newDataIsReady()), this, SLOT(readReady()));
+    }
 
 
+    if(serialPort->isOpen()) {
+        serialPort->setOpenState(false);
+        ui->connectButton->setChecked(false);
+    } else {
+        currentAddress = START_ADDRESS;
+        serialPort->setTimeout(COM_TIMEOUT);
         serialPort->setBaud(ui->comBaudBox->currentText().toInt());
         serialPort->setPort(ui->comPortBox->currentText());
         serialPort->setTimeout(COM_TIMEOUT);

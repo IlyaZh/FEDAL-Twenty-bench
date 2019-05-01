@@ -346,13 +346,10 @@ void DeviceControl::setSlaveButton(bool state) {
 }
 
 void DeviceControl::on_masterSlaveButton_clicked(bool state) {
-//    setMasterButton(!isMaster);
     emit setNewMaster(address, isSlave);
 }
 
 void DeviceControl::on_startStopButton_clicked(bool state) {
-//    setStartButton(state);
-
     if(state) {
         emit updateParameter(address, WRITE_STATUS_SHIFT, START_MASK);
     } else {
@@ -361,7 +358,6 @@ void DeviceControl::on_startStopButton_clicked(bool state) {
 }
 
 void DeviceControl::on_powerButton_clicked(bool state) {
-//    setPowerButton(state);
     if(state) {
         emit updateParameter(address, WRITE_STATUS_SHIFT, POWER_ON_MASK);
     } else {

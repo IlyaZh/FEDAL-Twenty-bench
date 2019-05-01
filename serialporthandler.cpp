@@ -279,7 +279,6 @@ bool SerialPortHandler::isBusy() {
 
 void SerialPortHandler::nextTask() {
     busyFlag = false;
-//    return; // for debug only. You'll delete this line before making poduction
 
     if(!queue.isEmpty()) {
         if(queue.head().isRead) {
@@ -314,5 +313,6 @@ void SerialPortHandler::clearQueue() {
 
 void SerialPortHandler::clearBuffer() {
     buffer.clear();
+    addr = 1;
     busyFlag = false;
 }

@@ -5,8 +5,6 @@
 #include <QLocale>
 #include <QDir>
 
-//#define DEBUG
-
 const QString ORG_NAME = "FEDAL";
 const QString APP_NAME = "Twenty Bench";
 const QString PROGRAM_NAME = "Fedal Work Bench";
@@ -33,11 +31,7 @@ const QString DELAY_UNIT = "мкс";
 const int STATUSBAR_MESSAGE_TIMEOUT = 5000; //ms
 const int START_ADDRESS = 1;
 const int DEVICE_COUNT = 20;
-#ifdef DEBUG
-const int COM_TIMEOUT = 2000; // ms
-#else
 const int COM_TIMEOUT = 100; // ms
-#endif
 const QList<quint16> readRegisters = {0x0011, 0x0021, 0x0001};
 const QList<quint8> countRegisters = {5, 5, 7};
 
