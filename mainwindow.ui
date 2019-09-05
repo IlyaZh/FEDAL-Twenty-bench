@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1010</width>
-    <height>525</height>
+    <height>702</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -206,13 +206,6 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="3">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0" colspan="2">
         <widget class="QPushButton" name="refreshPortsButton">
          <property name="maximumSize">
@@ -246,7 +239,7 @@
         </widget>
        </item>
        <item row="6" column="0" colspan="3">
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="debugGroup">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -373,6 +366,20 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="debugBox">
+         <property name="text">
+          <string>Консоль отладки</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="3">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
         </widget>
        </item>
       </layout>

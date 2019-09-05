@@ -32,6 +32,12 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 }
 
 void MainWindow::setupWindow() {
+    debugMode = false;
+
+    ui->debugBox->setChecked(debugMode);
+    ui->log->setVisible(debugMode);
+    ui->debugGroup->setVisible(debugMode);
+
     ui->firstAddressLabel->setText(QString::number(START_ADDRESS));
     ui->firstAddressSpinBox->setMinimum(START_ADDRESS);
     ui->firstAddressSpinBox->setValue(START_ADDRESS);
@@ -323,7 +329,7 @@ void MainWindow::on_connectButton_clicked()
     if(serialPort->isOpen()) {
         serialPort->setOpenState(false);
         ui->connectButton->setChecked(false);
-        disconnect(serialPort, 0, 0, 0);
+        serialPort->disconnect();
     } else {
 //        currentAddress = START_ADDRESS;
         currentAddress = ui->firstAddressLabel->text().toInt();
@@ -413,4 +419,12 @@ void MainWindow::on_firstAddressSpinBox_editingFinished()
 
 void MainWindow::appendToWLog(QString msg) {
     ui->log->appendPlainText("[" + QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss:zzz") + "] " + msg + QString('\r'));
+}
+
+
+void MainWindow::on_debugBox_toggled(bool checked)
+{
+    debugMode = checked;
+    ui->log->setVisible(debugMode);
+    ui->debugGroup->setVisible(debugMode);
 }

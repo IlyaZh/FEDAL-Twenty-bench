@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QDebug>
 
 #include "globals.h"
 #include "devicecontrol.h"
@@ -42,6 +43,7 @@ private:
     void readSettings();
     void writeSettings();
     bool maybeSave();
+    bool debugMode;
 
 
 private slots:
@@ -59,6 +61,7 @@ private slots:
     void on_lastAddressSpinBox_editingFinished();
     void on_firstAddressSpinBox_editingFinished();
     void appendToWLog(QString msg);
+    void on_debugBox_toggled(bool checked);
 };
 
 #endif // MAINWINDOW_H

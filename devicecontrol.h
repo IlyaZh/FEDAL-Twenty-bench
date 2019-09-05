@@ -14,6 +14,7 @@
 #include <QRadioButton>
 #include <QDebug>
 #include <QLineEdit>
+#include <QtMath>
 
 #include "globals.h"
 
