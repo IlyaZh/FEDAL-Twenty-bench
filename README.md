@@ -1,4 +1,4 @@
 # FEDAL-Twenty-bench
-Программа для управления 20 источниками по протоколу ModBUS.
+Control software for Fedal laser drivers by modbus protocol
 
 [changelog](CHANGELOG.md)
