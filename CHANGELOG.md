@@ -1,4 +1,10 @@
 # Changelog
+## [1.1.2] - 2022-09-20
+
+### Changed 
+- Fix a bug with timeout on serial port when moving application window
+
+
 ## [1.1.1] - 2019-02-27
 
 ### Changed 

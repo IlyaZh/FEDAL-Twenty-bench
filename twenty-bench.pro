@@ -9,9 +9,11 @@ QT       += core gui uitools serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 VERSION_PE_HEADER = 1.1
-VERSION = 1.1.1
+VERSION = 1.1.2
 TARGET = "FEDAL Twenty bench"
 TEMPLATE = app
+
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -28,11 +30,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     devicecontrol.cpp \
+    models/data_thread.cpp \
     serialporthandler.cpp
 
 HEADERS  += mainwindow.h \
     globals.h \
     devicecontrol.h \
+    models/data_thread.h \
+    models/queue.hpp \
+    serial_mock.hpp \
     serialporthandler.h \
     crctable.h
 
@@ -42,5 +48,8 @@ FORMS    += \
 
 RESOURCES += \
     resourses.qrc
+
+QMAKE_CXXFLAGS += -Wunused-value
+QMAKE_CXXFLAGS += -Werror
 
 RC_ICONS = FEDAL.ico
