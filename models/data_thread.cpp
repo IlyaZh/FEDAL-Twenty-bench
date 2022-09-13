@@ -59,7 +59,7 @@ void DataThread::run() {
   }
   emit signal_stateChanged(io->isOpen());
 
-  qDebug() << "Serial port has started";
+  qInfo() << "Serial port thread has started";
   QByteArray rx_buffer;
   while (is_working.load()) {
     const auto t = timeout.load();
@@ -97,7 +97,7 @@ void DataThread::run() {
   }
 
   emit signal_stateChanged(false);
-  qDebug() << "Serial port thread has stopped";
+  qInfo() << "Serial port thread has stopped";
   if (io) {
       io->close();
   }

@@ -101,7 +101,7 @@ void SerialPortHandler::startTransmit(QByteArray&& str) {
   dataThread->getQueue()->push(str);
   qInfo() << " ";
   QString msg("-> push to queue: " + str.toHex(' '));
-  qInfo() << msg;
+  qDebug() << msg;
   emit signal_appendToLog(msg);
 }
 
