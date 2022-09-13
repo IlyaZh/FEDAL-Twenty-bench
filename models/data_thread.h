@@ -6,13 +6,13 @@
 #include <QThread>
 #include <QtCore>
 
-#include "globals.h"
-
+#include "../globals.h"
+#include "queue.hpp"
 #ifdef USING_SERIAL_MOCK
-class SerialPort_Mock;
+#include "mocks/serial_mock.hpp"
 #endif
 
-#include "queue.hpp"
+namespace models {
 
 struct PortSettings {
   qint32 baud_rate;
@@ -45,13 +45,13 @@ class DataThread : public QThread {
 
  private:
 #ifdef USING_SERIAL_MOCK
-  SerialPort_Mock *io;
+  QSharedPointer<mocks::SerialPort_Mock> io;
 #else
-  QSerialPort *io;
+  QSharedPointer<QSerialPort> io;
 #endif
   QSharedPointer<Queue> q;
-  std::atomic<int> timeout{1000};
-  std::atomic<int> delay{300};
+  std::atomic<int> timeout{500};
+  std::atomic<int> delay{COM_TIMEOUT};
   std::atomic<bool> is_working{false};
   qint64 rx_wait_size{};
   qint64 retry_counts{5};
@@ -59,3 +59,5 @@ class DataThread : public QThread {
 
   void run() final override;
 };
+
+}  // namespace models

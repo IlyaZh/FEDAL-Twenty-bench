@@ -4,7 +4,7 @@
 #include <QLocale>
 #include <QString>
 
-#ifndef QT_DEBUG
+#ifdef QT_DEBUG
 #define USING_SERIAL_MOCK
 #endif
 
@@ -12,8 +12,8 @@ const QString ORG_NAME("FEDAL");
 const QString APP_NAME("Twenty Bench");
 const QString PROGRAM_NAME("Fedal Work Bench");
 constexpr int MAJOR_VERSION = 1;
-constexpr int MINOR_VERSION = 1;
-constexpr int PATCH_VERSION = 2;
+constexpr int MINOR_VERSION = 2;
+constexpr int PATCH_VERSION = 0;
 const QString APP_TITLE =
     PROGRAM_NAME + " (Version " + QString::number(MAJOR_VERSION) + "." +
     QString::number(MINOR_VERSION) + "." + QString::number(PATCH_VERSION) + ")";

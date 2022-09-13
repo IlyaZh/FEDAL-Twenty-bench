@@ -3,15 +3,16 @@
 #include "queue.hpp"
 
 #ifdef USING_SERIAL_MOCK
-#include "serial_mock.hpp"
+#include "mocks/serial_mock.hpp"
 #else
 #include <QSerialPort>
 #endif
 
+namespace models {
+
 DataThread::DataThread(qint64 rx_package_size, qint64 error_retry,
                        QObject* parent)
     : QThread(parent),
-      q(new Queue),
       rx_wait_size(rx_package_size),
       retry_counts(error_retry) {}
 
@@ -29,21 +30,22 @@ void DataThread::setTimeout(qint64 timeout_ms) { timeout.store(timeout_ms); }
 
 void DataThread::setDelay(qint64 delay_ms) { delay.store(delay_ms); }
 
-void DataThread::disable() { is_working.store(false); }
+void DataThread::disable() { is_working.store(false); q->push(""); q->push(""); qDebug() << "disable thread"; }
 
 void DataThread::enable(PortSettings& settings) {
   if (!isRunning()) {
     is_working.store(true);
-    QThread::start(LowPriority);
     settings_ = settings;
+    QThread::start(LowPriority);
   }
 }
 
 void DataThread::run() {
+    q = QSharedPointer<Queue>::create();
 #ifdef USING_SERIAL_MOCK
-  io = new SerialPort_Mock();
+  io = QSharedPointer<mocks::SerialPort_Mock>::create();
 #else
-  io = new QSerialPort();
+  io = QSharedPointer<QSerialPort>::create();
 #endif
   io->setBaudRate(settings_.baud_rate);
   io->setPortName(settings_.port_name);
@@ -57,11 +59,6 @@ void DataThread::run() {
   }
   emit signal_stateChanged(io->isOpen());
 
-  if (q->empty()) {
-    emit signal_readyToWrite();
-  }
-  connect(q.data(), &Queue::EmptyOccured, this,
-          &DataThread::signal_readyToWrite);
   qDebug() << "Serial port has started";
   QByteArray rx_buffer;
   while (is_working.load()) {
@@ -74,7 +71,9 @@ void DataThread::run() {
     }
 
     auto package = q->pop();
+    if(package.isEmpty()) continue;
     io->write(package);
+    qDebug() << QTime::currentTime().toString("HH:mm:ss.zzz") << "Tx: " << package.toHex(' ');
     if (!io->waitForBytesWritten(t)) {
       emit signal_timeout(package);
       continue;
@@ -84,6 +83,7 @@ void DataThread::run() {
       continue;
     }
     auto received_package = io->readAll();
+    qDebug() << "Rx: " << received_package.toHex(' ');
     rx_buffer.append(received_package);
     if (received_package.size() >= rx_wait_size) {
       emit signal_receivedData(rx_buffer);
@@ -91,14 +91,17 @@ void DataThread::run() {
     }
     QThread::msleep(delay.load());
   }
-  q.clear();
-  if (io->isOpen()) {
-    io->close();
+  if(q) {
+    q.data()->disconnect();
+    q->clear();
   }
-  emit signal_stateChanged(io->isOpen());
+
+  emit signal_stateChanged(false);
   qDebug() << "Serial port thread has stopped";
-  if (io != nullptr) {
-    delete io;
+  if (io) {
+      io->close();
   }
   io = nullptr;
 }
+
+}  // namespace models

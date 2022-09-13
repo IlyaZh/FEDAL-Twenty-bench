@@ -357,7 +357,7 @@ void MainWindow::on_connectButton_clicked() {
   } else {
     currentAddress = START_ADDRESS;
     serialPort->setTimeout(COM_TIMEOUT);
-    PortSettings settings{ui->comBaudBox->currentText().toInt(),
+    models::PortSettings settings{ui->comBaudBox->currentText().toInt(),
                           ui->comPortBox->currentText()};
     serialPort->setOpenState(true, settings);
     if (!serialPort->isOpen()) {

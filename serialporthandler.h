@@ -13,12 +13,14 @@
 #include <QThread>
 #include <QTimer>
 #include <optional>
+#include "models/data_thread.h"
+
 
 #ifdef USING_SERIAL_MOCK
+#include "mocks/serial_mock.hpp"
 class SerialPort_Mock;
 #endif
 
-#include "models/data_thread.h"
 
 class SerialPortHandler : public QThread {
   Q_OBJECT
@@ -70,7 +72,7 @@ class SerialPortHandler : public QThread {
   void startTransmit(QByteArray&&);
   void prepareToWrite(reply_t&& reply);
   void prepareToRead(reply_t&& reply);
-  DataThread* dataThread;
+  models::DataThread* dataThread;
 
  signals:
   void signal_newDataIsReady();
@@ -80,7 +82,7 @@ class SerialPortHandler : public QThread {
   void signal_appendToLog(QString);
 
  public slots:
-  void setOpenState(bool, std::optional<PortSettings>);
+  void setOpenState(bool, std::optional<models::PortSettings>);
   void dataToWrite(quint8 address, quint16 startRegister, quint16 value);
   void dataToRead(quint8 address, quint16 startRegister, quint8 count);
   void clearQueue();

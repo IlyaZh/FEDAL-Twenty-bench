@@ -43,19 +43,19 @@ void messageToFile(QtMsgType type, const QMessageLogContext &context,
   switch (type) {
     case QtInfoMsg:
       out << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss:zzz")
-          << " Info: " << msg << ",     " << context.file << Qt::endl;
+          << " Info: " << msg << ",     " << context.file << endl;
       break;
     case QtWarningMsg:
       out << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss:zzz")
-          << " Warning: " << msg << ",      " << context.file << Qt::endl;
+          << " Warning: " << msg << ",      " << context.file << endl;
       break;
     case QtCriticalMsg:
       out << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss:zzz")
-          << " Critical: " << msg << ",  " << context.file << Qt::endl;
+          << " Critical: " << msg << ",  " << context.file << endl;
       break;
     case QtFatalMsg:
       out << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss:zzz")
-          << " Fatal: " << msg << ",     " << context.file << Qt::endl;
+          << " Fatal: " << msg << ",     " << context.file << endl;
       break;
     default:
     case QtDebugMsg:

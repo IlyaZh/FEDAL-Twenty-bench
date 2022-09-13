@@ -9,7 +9,7 @@ QT       += core gui uitools serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 VERSION_PE_HEADER = 1.1
-VERSION = 1.1.2
+VERSION = 1.2.0
 TARGET = "FEDAL Twenty bench"
 TEMPLATE = app
 
@@ -36,6 +36,7 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     globals.h \
     devicecontrol.h \
+    mocks/serial_mock.hpp \
     models/data_thread.h \
     models/queue.hpp \
     serial_mock.hpp \

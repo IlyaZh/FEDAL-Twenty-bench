@@ -8,6 +8,8 @@
 #include <QtCore>
 #include <optional>
 
+namespace models {
+
 class Queue : public QObject {
   Q_OBJECT
  private:
@@ -71,3 +73,5 @@ class Queue : public QObject {
     queue.clear();
   }
 };
+
+}  // namespace models

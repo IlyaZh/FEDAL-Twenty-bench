@@ -3,27 +3,26 @@
 #include "crctable.h"
 #include "globals.h"
 #ifdef USING_SERIAL_MOCK
-#include "serial_mock.hpp"
+#include "mocks/serial_mock.hpp"
 #endif
 
 SerialPortHandler::SerialPortHandler(int tout, QObject* parent)
-    : QThread(parent), dataThread(new DataThread) {
+    : QThread(parent), dataThread(new models::DataThread) {
   setTimeout(tout);
 
   values.clear();
   buffer.clear();
-  clearQueue();
 
-  connect(dataThread, &DataThread::signal_timeout, this,
+  connect(dataThread, &models::DataThread::signal_timeout, this,
           &SerialPortHandler::timeOut);
-  connect(dataThread, &DataThread::signal_errorOccured, this,
+  connect(dataThread, &models::DataThread::signal_errorOccured, this,
           [this](const QString& error) {
             emit signal_errorOccured(error);
             clearBuffer();
           });
-  connect(dataThread, &DataThread::signal_receivedData, this,
+  connect(dataThread, &models::DataThread::signal_receivedData, this,
           &SerialPortHandler::readyRead);
-  connect(dataThread, &DataThread::signal_stateChanged, this,
+  connect(dataThread, &models::DataThread::signal_stateChanged, this,
           &SerialPortHandler::signal_stateChanged);
 }
 
@@ -85,7 +84,7 @@ void SerialPortHandler::readyRead(const QByteArray& received_package) {
 QList<quint16>& SerialPortHandler::getValues() { return values; }
 
 void SerialPortHandler::setOpenState(bool state,
-                                     std::optional<PortSettings> settings) {
+                                     std::optional<models::PortSettings> settings) {
   if (state == dataThread->isOpen()) return;
 
   if (dataThread->isOpen()) {
