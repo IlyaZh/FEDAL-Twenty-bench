@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QSerialPort>
 #include <QSharedPointer>
 #include <QString>
