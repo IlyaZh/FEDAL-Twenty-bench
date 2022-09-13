@@ -4,7 +4,9 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), serialPort(nullptr) {
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      serialPort(new SerialPortHandler(COM_TIMEOUT, this)) {
   ui->setupUi(this);
 
   setupWindow();
@@ -65,6 +67,16 @@ void MainWindow::setupWindow() {
   }
 
   on_refreshPortsButton_clicked();  // refresh com ports
+
+  connect(serialPort, SIGNAL(signal_stateChanged(bool)), this,
+          SLOT(onStateChanged(bool)));
+  connect(serialPort, SIGNAL(signal_appendToLog(QString)), this,
+          SLOT(appendToWLog(QString)));
+  connect(serialPort, &SerialPortHandler::signal_errorOccured, this,
+          &MainWindow::showError);
+  connect(serialPort, SIGNAL(signal_timeout(quint8)), this,
+          SLOT(onTimeout(quint8)));
+  connect(serialPort, SIGNAL(signal_newDataIsReady()), this, SLOT(readReady()));
 }
 
 // private
@@ -155,7 +167,7 @@ void MainWindow::onStateChanged(bool flag) {
   if (flag) {
     ui->portStateLabel->setText(ui->comPortBox->currentText() + " " +
                                 ui->comBaudBox->currentText() + " bps");
-    ui->connectButton->setText("Отключиться");
+    ui->connectButton->setText(tr("Отключиться"));
     ui->portStateLabel->setStyleSheet(
         "QLabel { \
                                                   background-color: rgb(104, 234, 23); \
@@ -170,7 +182,7 @@ void MainWindow::onStateChanged(bool flag) {
                  QString("   ") + ui->comBaudBox->currentText() + " bps");
     requestNextParam();
   } else {
-    ui->portStateLabel->setText("НЕ подключен");
+    ui->portStateLabel->setText(tr("НЕ подключен"));
     ui->portStateLabel->setStyleSheet(
         "QLabel { \
                                           background-color: rgb(240, 0, 0); \
@@ -203,10 +215,6 @@ void MainWindow::readReady() {
   }
 
   requestNextParam();
-
-  //  serialPort->nextTask();
-  //    if(serialPort->queueIsEmpty())
-  //        requestNextParam();
 }
 
 void MainWindow::setDevParam(quint8 address, quint16 reg, quint16 value) {
@@ -328,37 +336,15 @@ void MainWindow::on_connectButton_clicked() {
   settings->setValue("comPort", ui->comPortBox->currentText());
   settings->setValue("comBaudRate", ui->comBaudBox->currentText().toInt());
 
-  if (serialPort == nullptr)
-    serialPort = new SerialPortHandler(COM_TIMEOUT, this);
-
   if (serialPort->isOpen()) {
     serialPort->setOpenState(false, std::nullopt);
     ui->connectButton->setChecked(false);
-    serialPort->disconnect();
   } else {
     currentAddress = ui->firstAddressLabel->text().toInt();
     currentCommandId = 0;
     serialPort->setTimeout(COM_TIMEOUT);
-    connect(serialPort, SIGNAL(signal_stateChanged(bool)), this,
-            SLOT(onStateChanged(bool)));
-    connect(serialPort, SIGNAL(signal_appendToLog(QString)), this,
-            SLOT(appendToWLog(QString)));
-    connect(serialPort, &SerialPortHandler::signal_errorOccured, this,
-            &MainWindow::showError);
-    connect(serialPort, SIGNAL(signal_timeout(quint8)), this,
-            SLOT(onTimeout(quint8)));
-    connect(serialPort, SIGNAL(signal_newDataIsReady()), this,
-            SLOT(readReady()));
-  }
-
-  if (serialPort->isOpen()) {
-    serialPort->setOpenState(false, std::nullopt);
-    ui->connectButton->setChecked(false);
-  } else {
-    currentAddress = START_ADDRESS;
-    serialPort->setTimeout(COM_TIMEOUT);
     models::PortSettings settings{ui->comBaudBox->currentText().toInt(),
-                          ui->comPortBox->currentText()};
+                                  ui->comPortBox->currentText()};
     serialPort->setOpenState(true, settings);
     if (!serialPort->isOpen()) {
       showError("Connection failed");

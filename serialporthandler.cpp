@@ -7,7 +7,7 @@
 #endif
 
 SerialPortHandler::SerialPortHandler(int tout, QObject* parent)
-    : QThread(parent), dataThread(new models::DataThread) {
+    : QObject(parent), dataThread(new models::DataThread) {
   setTimeout(tout);
 
   values.clear();
@@ -83,15 +83,17 @@ void SerialPortHandler::readyRead(const QByteArray& received_package) {
 
 QList<quint16>& SerialPortHandler::getValues() { return values; }
 
-void SerialPortHandler::setOpenState(bool state,
-                                     std::optional<models::PortSettings> settings) {
+void SerialPortHandler::setOpenState(
+    bool state, std::optional<models::PortSettings> settings) {
   if (state == dataThread->isOpen()) return;
 
   if (dataThread->isOpen()) {
     dataThread->disable();
+    qDebug() << "disable";
     clearQueue();
     clearBuffer();
   } else {
+    qDebug() << "enable";
     dataThread->enable(settings.value());
   }
 }

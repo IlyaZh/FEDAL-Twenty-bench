@@ -30,7 +30,12 @@ void DataThread::setTimeout(qint64 timeout_ms) { timeout.store(timeout_ms); }
 
 void DataThread::setDelay(qint64 delay_ms) { delay.store(delay_ms); }
 
-void DataThread::disable() { is_working.store(false); q->push(""); q->push(""); qDebug() << "disable thread"; }
+void DataThread::disable() {
+  is_working.store(false);
+  q->push("");
+  q->push("");
+  qDebug() << "disable thread";
+}
 
 void DataThread::enable(PortSettings& settings) {
   if (!isRunning()) {
@@ -41,7 +46,7 @@ void DataThread::enable(PortSettings& settings) {
 }
 
 void DataThread::run() {
-    q = QSharedPointer<Queue>::create();
+  q = QSharedPointer<Queue>::create();
 #ifdef USING_SERIAL_MOCK
   io = QSharedPointer<mocks::SerialPort_Mock>::create();
 #else
@@ -71,9 +76,10 @@ void DataThread::run() {
     }
 
     auto package = q->pop();
-    if(package.isEmpty()) continue;
+    if (package.isEmpty()) continue;
     io->write(package);
-    qDebug() << QTime::currentTime().toString("HH:mm:ss.zzz") << "Tx: " << package.toHex(' ');
+    qDebug() << QTime::currentTime().toString("HH:mm:ss.zzz")
+             << "Tx: " << package.toHex(' ');
     if (!io->waitForBytesWritten(t)) {
       emit signal_timeout(package);
       continue;
@@ -91,7 +97,7 @@ void DataThread::run() {
     }
     QThread::msleep(delay.load());
   }
-  if(q) {
+  if (q) {
     q.data()->disconnect();
     q->clear();
   }
@@ -99,7 +105,7 @@ void DataThread::run() {
   emit signal_stateChanged(false);
   qInfo() << "Serial port thread has stopped";
   if (io) {
-      io->close();
+    io->close();
   }
   io = nullptr;
 }

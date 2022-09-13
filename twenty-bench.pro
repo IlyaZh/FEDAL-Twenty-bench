@@ -39,7 +39,6 @@ HEADERS  += mainwindow.h \
     mocks/serial_mock.hpp \
     models/data_thread.h \
     models/queue.hpp \
-    serial_mock.hpp \
     serialporthandler.h \
     crctable.h
 
@@ -52,5 +51,7 @@ RESOURCES += \
 
 QMAKE_CXXFLAGS += -Wunused-value
 QMAKE_CXXFLAGS += -Werror
+
+TRANSLATIONS += qt_en.ts
 
 RC_ICONS = FEDAL.ico

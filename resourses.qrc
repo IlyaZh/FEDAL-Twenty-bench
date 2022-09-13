@@ -2,4 +2,8 @@
     <qresource prefix="/forms">
         <file>devicecontrolform.ui</file>
     </qresource>
+    <qresource prefix="/">
+        <file>qt_en.qm</file>
+        <file>qt_en.ts</file>
+    </qresource>
 </RCC>

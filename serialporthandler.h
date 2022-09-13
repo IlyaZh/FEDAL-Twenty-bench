@@ -13,16 +13,15 @@
 #include <QThread>
 #include <QTimer>
 #include <optional>
-#include "models/data_thread.h"
 
+#include "models/data_thread.h"
 
 #ifdef USING_SERIAL_MOCK
 #include "mocks/serial_mock.hpp"
 class SerialPort_Mock;
 #endif
 
-
-class SerialPortHandler : public QThread {
+class SerialPortHandler : public QObject {
   Q_OBJECT
  public:
   explicit SerialPortHandler(int timeout = 50, QObject* parent = nullptr);

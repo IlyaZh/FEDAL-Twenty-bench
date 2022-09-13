@@ -337,7 +337,7 @@ void DeviceControl::setDeviceState(quint16 value) {
 void DeviceControl::setStartButton(bool startState) {
   ui_startStopButton->setChecked(startState);
   if (startState) {
-    ui_startStopButton->setText("Запущен");
+    ui_startStopButton->setText(tr("Запущен"));
     ui_startStopButton->setStyleSheet(
         "QPushButton { \
                                             background-color: #00ee00; \
@@ -346,7 +346,7 @@ void DeviceControl::setStartButton(bool startState) {
                                             color: #fff; \
                                         }");
   } else {
-    ui_startStopButton->setText("Остановлен");
+    ui_startStopButton->setText(tr("Остановлен"));
     ui_startStopButton->setStyleSheet(
         "QPushButton { \
                                             background-color: #ee0000; \
@@ -361,7 +361,7 @@ void DeviceControl::setSlaveButton(bool state) {
   isSlave = state;
   ui_masterSlaveButton->setChecked(state);
   if (state) {
-    ui_masterSlaveButton->setText("slave");
+    ui_masterSlaveButton->setText("Slave");
     ui_masterSlaveButton->setStyleSheet(
         "QPushButton { \
                                             background-color: #00ee00; \
@@ -370,7 +370,7 @@ void DeviceControl::setSlaveButton(bool state) {
                                             color: #fff; \
                                         }");
   } else {
-    ui_masterSlaveButton->setText("master");
+    ui_masterSlaveButton->setText("Master");
     ui_masterSlaveButton->setStyleSheet(
         "QPushButton { \
                                     background-color: #ee0000; \
@@ -411,9 +411,9 @@ void DeviceControl::setPowerButton(bool state) {
                                       border-radius: 4px; \
                                       color: #fff; \
                                   }");
-    ui_powerButton->setText("ВКЛ");
+    ui_powerButton->setText(tr("ВКЛ"));
   } else {
-    ui_powerButton->setText("ВЫКЛ");
+    ui_powerButton->setText(tr("ВЫКЛ"));
     ui_powerButton->setStyleSheet(
         "QPushButton { \
                                       background-color: #ee0000; \
